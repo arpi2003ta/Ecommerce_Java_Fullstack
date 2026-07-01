@@ -10,6 +10,7 @@ function App() {
       </div>
       <div>
         <homepage/>
+        {/* <Product/> */}
         homepage
       </div>
       <footer/>
