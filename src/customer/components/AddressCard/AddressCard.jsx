@@ -1,6 +1,21 @@
-import  React from 'react'
+import React from 'react'
 
-const AddressCard = () => {
+const AddressCard = ({ address }) => {
+  if (address) {
+    return (
+      <div>
+        <div className="space-y-3">
+          <p className="font-semibold">{address.firstname} {address.lastname}</p>
+          <p>{address.streetAddress}, {address.city}, {address.state} - {address.zipCode}</p>
+          <div className="space-y-1">
+            <p className="font-semibold">Phone Number</p>
+            <p>+91 {address.mobile}</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
         <div className="space-y-3">
@@ -9,13 +24,9 @@ const AddressCard = () => {
             <div className="space-y-1">
                 <p className="font-semibold">Phone Number</p>
                 <p>+91 6539253792</p>
-                
             </div>
-
         </div>
-
     </div>
-
   )
 }
 

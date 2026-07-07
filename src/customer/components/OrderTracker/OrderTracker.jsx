@@ -1,23 +1,26 @@
-import {stepper} from '@mui/material'
+import { Stepper, Step, StepLabel } from '@mui/material'
 import React from 'react'
 
-const steps=[
-    "Placed",
-    "Order Cinfirmend",
-    "Shipped",
-    "Out for Delivery",
-    "Delivered"
+const steps = [
+  "Placed",
+  "Order Confirmed",
+  "Shipped",
+  "Out for Delivery",
+  "Delivered"
 ]
-const OrderTracker = ({activeStep}) => {
+
+const OrderTracker = ({ activeStep }) => {
   return (
     <div className='w-full'>
-        <stepper activeStep={activeStep} alternativeLabel>
-{steps.map((label)=> <step>
-    <stepLabel sx={{color: "#9155fd", fontsize:"44px"}}>
-        {label}
-    <stepLabel/>
-</step>)}        
-        </stepper>
+      <Stepper activeStep={activeStep} alternativeLabel>
+        {steps.map((label, index) => (
+          <Step key={label} completed={activeStep > index}>
+            <StepLabel sx={{ color: "#9155fd", fontSize: "44px" }}>
+              {label}
+            </StepLabel>
+          </Step>
+        ))}
+      </Stepper>
     </div>
   )
 }

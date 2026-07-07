@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -8,15 +9,17 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { Avatar, Button, Menu, MenuItem } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 import { navigation } from "./navigationData";
 import { deepPurple } from "@mui/material/colors";
+import AuthModal from "../../AuthModal";
+import { logout } from "../../../redux/store";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Navigation() {
   const [open, setOpen] = useState(false);
-  const navigate=useNavigate();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { auth, cart } = useSelector((store) => store);
@@ -42,7 +45,8 @@ export default function Navigation() {
 
   
   const handleCategoryClick = (category, section, item, close) => {
-    navigate(`/${category.id}/${section.id}/${item.id}`);
+    if (!item.id || item.id === '#') return
+    navigate(`/products/${category.id}/${section.id}/${item.id}`);
     close();
   };
 
@@ -68,7 +72,7 @@ export default function Navigation() {
   };
 
   return (
-    <div className="bg-white pb-10">
+    <div className="bg-white sticky top-0 z-50 shadow-sm">
       {/* Mobile menu */}
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-40 lg:hidden" onClose={setOpen}>
@@ -118,7 +122,7 @@ export default function Navigation() {
                               selected
                                 ? "border-indigo-600 text-indigo-600"
                                 : "border-transparent text-gray-900",
-                              "flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-base font-medium border-none"
+                              "flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-base font-bold border-none"
                             )
                           }
                         >
@@ -178,9 +182,11 @@ export default function Navigation() {
                             >
                               {section.items.map((item) => (
                                 <li key={item.name} className="flow-root">
-                                  <p className="-m-2 block p-2 text-gray-500">
-                                    {"item.name"}
-                                  </p>
+                                  <p
+                                  className="-m-2 block p-2 text-gray-500"
+                                >
+                                  {item.name}
+                                </p>
                                 </li>
                               ))}
                             </ul>
@@ -194,12 +200,12 @@ export default function Navigation() {
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
                   {navigation.pages.map((page) => (
                     <div key={page.name} className="flow-root">
-                      <a
-                        href={page.href}
+                      <Link
+                        to={page.id}
                         className="-m-2 block p-2 font-medium text-gray-900"
                       >
                         {page.name}
-                      </a>
+                      </Link>
                     </div>
                   ))}
                 </div>
@@ -208,7 +214,7 @@ export default function Navigation() {
                   <div className="flow-root">
                     <a
                       href="/"
-                      className="-m-2 block p-2 font-medium text-gray-900"
+                      className="-m-2 block p-2 font-bold text-gray-900 hover:text-indigo-600 transition-colors"
                     >
                       Sign in
                     </a>
@@ -234,9 +240,9 @@ export default function Navigation() {
         </Dialog>
       </Transition.Root>
 
-      <header className="relative bg-white">
-        <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
-          Get free delivery on orders over $100
+      <header className="relative bg-white shadow-sm">
+        <p className="flex h-10 items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-600 px-4 text-sm font-bold text-white sm:px-6 lg:px-8 tracking-wide">
+          Get free delivery on orders over Rs 699
         </p>
 
         <nav aria-label="Top" className="mx-auto">
@@ -244,7 +250,7 @@ export default function Navigation() {
             <div className="flex h-16 items-center px-11">
               <button
                 type="button"
-                className="rounded-md bg-white p-2 text-gray-400 lg:hidden"
+                className="rounded-md bg-white p-2 text-gray-400 lg:hidden hover:text-indigo-600 transition-colors"
                 onClick={() => setOpen(true)}
               >
                 <span className="sr-only">Open menu</span>
@@ -275,8 +281,8 @@ export default function Navigation() {
                               className={classNames(
                                 open
                                   ? "border-indigo-600 text-indigo-600"
-                                  : "border-transparent text-gray-700 hover:text-gray-800",
-                                "relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out"
+                                  : "border-transparent text-gray-900 hover:text-indigo-600",
+                                "relative z-10 -mb-px flex items-center border-b-2 pt-px text-base font-bold transition-colors duration-200 ease-out"
                               )}
                             >
                               {category.name}
@@ -384,20 +390,20 @@ export default function Navigation() {
                   ))}
 
                   {navigation.pages.map((page) => (
-                    <a
+                    <Link
                       key={page.name}
-                      href={page.href}
-                      className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
+                      to={page.id}
+                      className="flex items-center text-sm font-bold text-gray-700 hover:text-indigo-600 transition-colors"
                     >
                       {page.name}
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </Popover.Group>
 
               <div className="ml-auto flex items-center">
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                  {true ? (
+                  {(jwt || auth.user) ? (
                     <div>
                       <Avatar
                         className="text-white"
@@ -412,7 +418,7 @@ export default function Navigation() {
                           cursor: "pointer",
                         }}
                       >
-                        {auth.user?.firstName[0].toUpperCase()}
+                        {auth.user?.firstName?.[0].toUpperCase()}
                       </Avatar>
                       {/* <Button
                         id="basic-button"
@@ -435,23 +441,30 @@ export default function Navigation() {
                         <MenuItem onClick={()=>navigate("/account/order")}>
                         My Orders
                         </MenuItem>
-                        <MenuItem>Logout</MenuItem>
+                        <MenuItem onClick={handleLogout}>Logout</MenuItem>
                       </Menu>
                     </div>
                   ) : (
-                    <Button
-                      onClick={handleOpen}
-                      className="text-sm font-medium text-gray-700 hover:text-gray-800"
-                    >
-                      Signin
-                    </Button>
+                    <div className="flex items-center gap-3">
+                      <Button
+                        onClick={handleOpen}
+                        className="text-sm font-bold text-gray-700 hover:text-indigo-600 transition-colors"
+                      >
+                        Sign In
+                      </Button>
+                      <Button
+                        onClick={() => navigate('/register')}
+                        className="text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors"
+                      >
+                        Register
+                      </Button>
+                    </div>
                   )}
                 </div>
 
                 {/* Search */}
                 <div className="flex items-center lg:ml-6">
-                
-                  <p onClick={()=>navigate("/products/search")} className="p-2 text-gray-400 hover:text-gray-500">
+                   <p onClick={()=>navigate("/products/search")} className="p-2 text-gray-400 hover:text-indigo-600 transition-colors cursor-pointer">
                     <span className="sr-only">Search</span>
                     
                     <MagnifyingGlassIcon
@@ -464,13 +477,14 @@ export default function Navigation() {
                 {/* Cart */}
                 <div className="ml-4 flow-root lg:ml-6">
                   <Button
+                    onClick={() => navigate('/cart')}
                     className="group -m-2 flex items-center p-2"
                   >
                     <ShoppingBagIcon
-                      className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                      className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-indigo-600 transition-colors"
                       aria-hidden="true"
                     />
-                    <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
+                    <span className="ml-2 text-sm font-bold text-gray-700 group-hover:text-indigo-600 transition-colors">
                       {cart.cart?.totalItem}
                     </span>
                     <span className="sr-only">items in cart, view bag</span>

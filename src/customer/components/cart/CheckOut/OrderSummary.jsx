@@ -1,23 +1,52 @@
 import React from "react";
 import { Button } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
 import AddressCard from "../../AddressCard/AddressCard";
-import CartItem from "./CartItem";
+import CartItem from "../CartItem";
+import { removeFromCart, updateQuantity } from "../../../redux/store";
 
-const OrderSummary = () => {
+const OrderSummary = ({ savedAddress }) => {
+  const dispatch = useDispatch();
+  const { cart } = useSelector((store) => store);
+
+  const handleQuantityChange = (id, delta) => {
+    const item = cart.cart.find(i => i.id === id)
+    if (!item) return
+    const newQty = item.quantity + delta
+    if (newQty <= 0) {
+      dispatch(removeFromCart(id))
+    } else {
+      dispatch(updateQuantity({ id, quantity: newQty }))
+    }
+  }
+
+  const handleRemove = (id) => {
+    dispatch(removeFromCart(id))
+  }
+
   return (
     <div>
       {/* Address Section */}
       <div className="p-5 shadow-lg rounded-md border">
-        <AddressCard />
+        <AddressCard address={savedAddress} />
       </div>
 
       {/* Cart & Price Details */}
       <div className="lg:grid grid-cols-3 lg:px-16 relative">
         {/* Cart Items */}
         <div className="col-span-2">
-          {[1, 1, 1, 1].map((item, index) => (
-            <CartItem key={index} />
-          ))}
+          {cart.cart && cart.cart.length > 0 ? (
+            cart.cart.map((item) => (
+              <CartItem 
+                key={item.id} 
+                item={item} 
+                onQuantityChange={handleQuantityChange}
+                onRemove={handleRemove}
+              />
+            ))
+          ) : (
+            <p className="text-gray-500 text-center py-10">Your cart is empty.</p>
+          )}
         </div>
 
         {/* Price Details */}
@@ -33,36 +62,24 @@ const OrderSummary = () => {
           <div className="space-y-3 font-semibold">
             <div className="flex justify-between pt-3 text-black">
               <span>Price</span>
-              <span>$265</span>
+              <span>₹{cart.totalPrice || 0}</span>
             </div>
 
             <div className="flex justify-between pt-3 text-green-600">
-              <span>Discount</span>
-              <span>50%</span>
+              <span>Total Discount</span>
+              <span>-₹{cart.totalDiscount || 0}</span>
             </div>
 
-            <div className="flex justify-between pt-3 text-green-600">
+            <div className='flex justify-between pt-3 text-green-600'>
               <span>Delivery Charges</span>
-              <span>Free</span>
+              <span>{cart.delivery === 0 ? 'Free' : `₹${cart.delivery}`}</span>
             </div>
 
-            <div className="flex justify-between pt-3 font-bold">
+            <div className='flex justify-between pt-3 text-green-600'>
               <span>Total Amount</span>
-              <span className="text-green-600">$1278</span>
+              <span className='text-green-600'>₹{cart.totalPayable || 0}</span>
             </div>
           </div>
-
-          <Button
-            variant="contained"
-            className="w-full mt-5"
-            sx={{
-              px: "2rem",
-              py: "1rem",
-              bgcolor: "#9155fd",
-            }}
-          >
-            Add To Cart
-          </Button>
         </div>
       </div>
     </div>
