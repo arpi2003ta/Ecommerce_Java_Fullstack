@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout/Layout'
+import AdminLayout from './components/Layout/AdminLayout'
 import Homepage from './customer/pages/homepage/homepage'
 import Product from './customer/components/Product/Product'
 import ProductDetails from './customer/components/ProductDetails/ProductDetails'
@@ -27,13 +28,6 @@ function App() {
         <Route path="register" element={<Register />} />
         <Route path="products/search" element={<SearchResults />} />
 
-        {/* Admin route */}
-        <Route path="admin" element={
-          <AdminRoute>
-            <AdminDashboard />
-          </AdminRoute>
-        } />
-
         {/* Protected customer routes */}
         <Route path="cart" element={
           <ProtectedRoute>
@@ -55,6 +49,15 @@ function App() {
             <OrderDetails />
           </ProtectedRoute>
         } />
+      </Route>
+
+      {/* Admin route with its own layout */}
+      <Route path="admin" element={
+        <AdminRoute>
+          <AdminLayout />
+        </AdminRoute>
+      }>
+        <Route index element={<AdminDashboard />} />
       </Route>
     </Routes>
   );

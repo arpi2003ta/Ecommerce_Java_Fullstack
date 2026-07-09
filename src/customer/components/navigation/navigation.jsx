@@ -438,6 +438,11 @@ export default function Navigation() {
                           "aria-labelledby": "basic-button",
                         }}
                       >
+                        {auth.user?.role === "ROLE_ADMIN" && (
+                          <MenuItem onClick={() => navigate("/admin")}>
+                            Admin Dashboard
+                          </MenuItem>
+                        )}
                         <MenuItem onClick={()=>navigate("/account/order")}>
                         My Orders
                         </MenuItem>
