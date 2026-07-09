@@ -3,7 +3,7 @@ import { Button } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import AddressCard from "../../AddressCard/AddressCard";
 import CartItem from "../CartItem";
-import { removeFromCart, updateQuantity } from "../../../redux/store";
+import { removeFromCart, updateQuantity } from "../../../../redux/store";
 
 const OrderSummary = ({ savedAddress }) => {
   const dispatch = useDispatch();
